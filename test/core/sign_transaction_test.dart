@@ -119,7 +119,7 @@ void main() {
       final credentials =
           EthPrivateKey.fromHex(strip0x(tx['privateKey'] as String));
       final transaction = Transaction(
-        from: credentials.address,
+        from: await credentials.address,
         to: EthereumAddress.fromHex(tx['to'] as String),
         nonce: tx['nonce'] as int,
         maxGas: tx['gasLimit'] as int,
@@ -152,12 +152,12 @@ void main() {
   test('sign eip 1559 transaction without client', () {
     final data = jsonDecode(rawJson) as List<dynamic>;
 
-    Future.forEach(data, (element) {
+    Future.forEach(data, (element) async {
       final tx = element as Map<String, dynamic>;
       final credentials =
           EthPrivateKey.fromHex(strip0x(tx['privateKey'] as String));
       final transaction = Transaction(
-        from: credentials.address,
+        from: await credentials.address,
         to: EthereumAddress.fromHex(tx['to'] as String),
         nonce: tx['nonce'] as int,
         maxGas: tx['gasLimit'] as int,
@@ -174,7 +174,7 @@ void main() {
       );
 
       final signature =
-          signTransactionRaw(transaction, credentials, chainId: 4);
+          await signTransactionRaw(transaction, credentials, chainId: 4);
 
       expect(
         bytesToHex(
@@ -192,7 +192,7 @@ void main() {
       'a2fd51b96dc55aeb14b30d55a6b3121c7b9c599500c1beb92a389c3377adc86e',
     );
     final transaction = Transaction(
-      from: credentials.address,
+      from: await credentials.address,
       to: EthereumAddress.fromHex('0xC914Bb2ba888e3367bcecEb5C2d99DF7C7423706'),
       nonce: 0,
       gasPrice: EtherAmount.inWei(BigInt.one),

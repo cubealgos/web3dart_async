@@ -25,7 +25,7 @@ Future<_SigningInput> _fillMissingData({
     );
   }
 
-  final sender = transaction.from ?? credentials.address;
+  final sender = transaction.from ?? await credentials.address;
   var gasPrice = transaction.gasPrice;
 
   if (client == null &&
@@ -100,13 +100,13 @@ Uint8List prependTransactionType(int type, Uint8List transaction) {
     ..setAll(1, transaction);
 }
 
-Uint8List signTransactionRaw(
+Future<Uint8List> signTransactionRaw(
   Transaction transaction,
   Credentials c, {
   int? chainId = 1,
-}) {
+}) async {
   final encoded = transaction.getUnsignedSerialized(chainId: chainId);
-  final signature = c.signToEcSignature(
+  final signature = await c.signToEcSignature(
     encoded,
     chainId: chainId,
     isEIP1559: transaction.isEIP1559,

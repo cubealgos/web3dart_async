@@ -13,7 +13,7 @@ Future<void> main() async {
   final client = Web3Client(rpcUrl, Client());
 
   final credentials = EthPrivateKey.fromHex(privateKey);
-  final address = credentials.address;
+  final address = await credentials.address;
 
   print(address.eip55With0x);
   print(await client.getBalance(address));

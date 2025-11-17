@@ -10,19 +10,22 @@ abstract class Credentials {
   /// expensive signing operations on another isolate.
   bool get isolateSafe => false;
 
-  EthereumAddress get address;
+  Future<EthereumAddress> get address;
 
   /// Signs the [payload] with a private key. The output will be like the
   /// bytes representation of the [eth_sign RPC method](https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sign),
   /// but without the "Ethereum signed message" prefix.
   /// The [payload] parameter contains the raw data, not a hash.
-  Uint8List signToUint8List(
+  Future<Uint8List> signToUint8List(
     Uint8List payload, {
     int? chainId,
     bool isEIP1559 = false,
-  }) {
-    final signature =
-        signToEcSignature(payload, chainId: chainId, isEIP1559: isEIP1559);
+  }) async {
+    final signature = await signToEcSignature(
+      payload,
+      chainId: chainId,
+      isEIP1559: isEIP1559,
+    );
 
     final r = padUint8ListTo32(unsignedIntToBytes(signature.r));
     final s = padUint8ListTo32(unsignedIntToBytes(signature.s));
@@ -34,7 +37,7 @@ abstract class Credentials {
 
   /// Signs the [payload] with a private key and returns the obtained
   /// signature.
-  MsgSignature signToEcSignature(
+  Future<MsgSignature> signToEcSignature(
     Uint8List payload, {
     int? chainId,
     bool isEIP1559 = false,
@@ -43,22 +46,18 @@ abstract class Credentials {
   /// Signs an Ethereum specific signature. This method is equivalent to
   /// [signToUint8List], but with a special prefix so that this method can't be used to
   /// sign, for instance, transactions.
-  Uint8List signPersonalMessageToUint8List(Uint8List payload, {int? chainId}) {
+  Future<Uint8List> signPersonalMessageToUint8List(
+    Uint8List payload, {
+    int? chainId,
+  }) async {
     final prefix = _messagePrefix + payload.length.toString();
     final prefixBytes = ascii.encode(prefix);
 
     // will be a Uint8List, see the documentation of Uint8List.+
     final concat = uint8ListFromList(prefixBytes + payload);
 
-    return signToUint8List(concat, chainId: chainId);
+    return await signToUint8List(concat, chainId: chainId);
   }
-}
-
-/// Credentials where the [address] is known synchronously.
-abstract class CredentialsWithKnownAddress extends Credentials {
-  /// The ethereum address belonging to this credential.
-  @override
-  EthereumAddress get address;
 }
 
 /// Interface for [Credentials] that don't sign transactions locally, for
@@ -68,7 +67,7 @@ abstract class CustomTransactionSender extends Credentials {
 }
 
 /// Credentials that can sign payloads with an Ethereum private key.
-class EthPrivateKey extends CredentialsWithKnownAddress {
+class EthPrivateKey extends Credentials {
   /// Creates a private key from a byte array representation.
   ///
   /// The bytes are interpreted as an unsigned integer forming the private key.
@@ -102,7 +101,7 @@ class EthPrivateKey extends CredentialsWithKnownAddress {
   final bool isolateSafe = true;
 
   @override
-  EthereumAddress get address {
+  Future<EthereumAddress> get address async {
     return _cachedAddress ??=
         EthereumAddress(publicKeyToAddress(privateKeyToPublic(privateKeyInt)));
   }
@@ -114,11 +113,11 @@ class EthPrivateKey extends CredentialsWithKnownAddress {
   ECPoint get publicKey => (params.G * privateKeyInt)!;
 
   @override
-  MsgSignature signToEcSignature(
+  Future<MsgSignature> signToEcSignature(
     Uint8List payload, {
     int? chainId,
     bool isEIP1559 = false,
-  }) {
+  }) async {
     final signature = secp256k1.sign(keccak256(payload), privateKey);
 
     // https://github.com/ethereumjs/ethereumjs-util/blob/8ffe697fafb33cefc7b7ec01c11e3a7da787fe0e/src/signature.ts#L26
