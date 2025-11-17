@@ -1,4 +1,4 @@
-part of '../../web3dart.dart';
+part of '../../web3dart_async.dart';
 
 class EthrDID {
   const EthrDID(this.did);

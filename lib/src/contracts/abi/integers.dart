@@ -1,4 +1,4 @@
-part of '../../../web3dart.dart';
+part of '../../../web3dart_async.dart';
 
 const int _ethereumAddressByteLength = 20;
 

@@ -1,4 +1,4 @@
-part of 'package:web3dart/web3dart.dart';
+part of 'package:web3dart_async/web3dart_async.dart';
 
 class Transaction {
   Transaction({

@@ -1,4 +1,4 @@
-part of '../../web3dart.dart';
+part of '../../web3dart_async.dart';
 
 final ECDomainParameters params = ECCurve_secp256k1();
 final BigInt _halfCurveOrder = params.n >> 1;

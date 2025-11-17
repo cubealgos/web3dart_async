@@ -1,4 +1,4 @@
-part of '../../web3dart.dart';
+part of '../../web3dart_async.dart';
 
 /// Anything that can sign payloads with a private key.
 abstract class Credentials {

@@ -1,4 +1,4 @@
-part of '../../../web3dart.dart';
+part of '../../../web3dart_async.dart';
 
 /// Tuple Type
 class TupleType extends AbiType<List<dynamic>> {

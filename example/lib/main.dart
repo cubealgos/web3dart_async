@@ -2,7 +2,7 @@
 
 import 'package:http/http.dart';
 import 'package:wallet/wallet.dart';
-import 'package:web3dart/web3dart.dart';
+import 'package:web3dart_async/web3dart_async.dart';
 
 const String privateKey =
     'a2fd51b96dc55aeb14b30d55a6b3121c7b9c599500c1beb92a389c3377adc86e';

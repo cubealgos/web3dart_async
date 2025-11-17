@@ -1,4 +1,4 @@
-part of '../../web3dart.dart';
+part of '../../web3dart_async.dart';
 
 final KeccakDigest keccakDigest = KeccakDigest(256);
 
